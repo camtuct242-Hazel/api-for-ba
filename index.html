@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API cho Business Analyst — Cẩm nang thực chiến</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAF7F0;
+  --paper-2:#F2EEE3;
+  --ink:#1B1B1F;
+  --ink-soft:#4A4A52;
+  --line:#D9D2C0;
+  --blue:#1F3A5F;
+  --blue-2:#335A82;
+  --blue-light:#6E93B5;
+  --amber:#D98E2E;
+  --amber-soft:#F3DCB1;
+  --green:#3E7A4C;
+  --green-soft:#DCEBDD;
+  --red:#B0473F;
+  --red-soft:#F3DAD6;
+  --mono: 'JetBrains Mono', monospace;
+  --serif: 'Newsreader', serif;
+  --sans: 'Manrope', sans-serif;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  font-family:var(--sans);
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0/100% 42px,
+    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/42px 100%,
+    var(--paper);
+  background-attachment:local;
+  color:var(--ink);
+  line-height:1.6;
+}
+.bg-fade{
+  position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:radial-gradient(ellipse at 20% 0%, rgba(250,247,240,0.0) 0%, var(--paper) 72%);
+}
+a{color:inherit;}
+.wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 28px;}
+
+/* ===== HEADER ===== */
+header.hero{
+  padding:74px 0 56px;
+  border-bottom:2px solid var(--ink);
+  position:relative;
+}
+.kicker{
+  font-family:var(--mono); font-size:12.5px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--blue); font-weight:700; display:flex; align-items:center; gap:10px; margin-bottom:18px;
+}
+.kicker::before{content:"§"; font-size:15px;}
+h1.title{
+  font-family:var(--serif); font-weight:600; font-size:clamp(38px,6vw,68px);
+  line-height:1.04; margin:0 0 20px; letter-spacing:-0.01em;
+}
+h1.title em{font-style:italic; color:var(--blue);}
+.subtitle{max-width:640px; font-size:18px; color:var(--ink-soft); margin-bottom:30px;}
+.hero-meta{display:flex; flex-wrap:wrap; gap:10px;}
+.tag{
+  font-family:var(--mono); font-size:12px; padding:6px 12px; border:1px solid var(--ink);
+  border-radius:100px; background:var(--paper); font-weight:600;
+}
+.tag.blue{background:var(--blue); color:var(--paper); border-color:var(--blue);}
+
+/* ===== LAYOUT ===== */
+.layout{display:grid; grid-template-columns:220px 1fr; gap:56px; padding:56px 0 100px; align-items:start;}
+nav.toc{
+  position:sticky; top:26px; font-family:var(--mono); font-size:13px;
+}
+nav.toc .toc-label{font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin-bottom:14px; font-weight:700;}
+nav.toc a{
+  display:block; padding:7px 0; color:var(--ink-soft); text-decoration:none; border-left:2px solid transparent;
+  padding-left:12px; transition:.15s; font-weight:500;
+}
+nav.toc a:hover, nav.toc a.active{color:var(--blue); border-left-color:var(--blue); font-weight:700;}
+main{min-width:0;}
+
+section.block{margin-bottom:88px; scroll-margin-top:26px;}
+.block-head{display:flex; align-items:baseline; gap:16px; margin-bottom:26px;}
+.block-num{font-family:var(--mono); font-size:14px; color:var(--amber); font-weight:700;}
+h2{
+  font-family:var(--serif); font-size:clamp(26px,3.4vw,36px); font-weight:600; margin:0;
+  letter-spacing:-0.01em;
+}
+h3{font-family:var(--serif); font-size:21px; font-weight:600; margin:0 0 12px;}
+p{margin:0 0 14px; color:var(--ink-soft); font-size:15.5px;}
+p.lead{font-size:17px; color:var(--ink);}
+.card{
+  background:var(--paper); border:1.5px solid var(--ink); border-radius:14px; padding:26px 28px;
+}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:20px;}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+/* ===== ANALOGY DIAGRAM ===== */
+.analogy{
+  display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; align-items:center;
+  border:1.5px solid var(--ink); border-radius:16px; overflow:hidden; background:var(--paper);
+}
+.analogy .cell{padding:30px 22px; text-align:center; position:relative;}
+.analogy .cell:not(:last-child){border-right:1.5px dashed var(--line);}
+.analogy .icon{font-size:38px; margin-bottom:10px; display:block;}
+.analogy .cell h4{font-family:var(--serif); font-size:17px; margin:0 0 6px; font-weight:600;}
+.analogy .cell small{font-family:var(--mono); font-size:11.5px; color:var(--blue); text-transform:uppercase; letter-spacing:.06em;}
+.analogy .cell p{font-size:13.5px; margin-top:8px;}
+.arrow-row{display:flex; justify-content:center; gap:6px; margin:0 -20px;}
+
+/* ===== TABS: HTTP METHODS ===== */
+.tabbar{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;}
+.tabbtn{
+  font-family:var(--mono); font-weight:700; font-size:13px; padding:9px 18px; border-radius:100px;
+  border:1.5px solid var(--ink); background:var(--paper); cursor:pointer; transition:.15s; color:var(--ink);
+}
+.tabbtn.active{background:var(--ink); color:var(--paper);}
+.tabbtn[data-method="GET"].active{background:var(--green); border-color:var(--green);}
+.tabbtn[data-method="POST"].active{background:var(--blue); border-color:var(--blue);}
+.tabbtn[data-method="PUT"].active{background:var(--amber); border-color:var(--amber);}
+.tabbtn[data-method="PATCH"].active{background:#8B6BA8; border-color:#8B6BA8;}
+.tabbtn[data-method="DELETE"].active{background:var(--red); border-color:var(--red);}
+.tabpanel{display:none;}
+.tabpanel.active{display:block; animation:fade .25s ease;}
+@keyframes fade{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;}}
+
+.codebox{
+  background:#151A21; color:#E4E9F0; border-radius:12px; padding:20px 22px; font-family:var(--mono);
+  font-size:13px; overflow-x:auto; line-height:1.65;
+}
+.codebox .k{color:#7FB8E8;}
+.codebox .s{color:#B7E0A4;}
+.codebox .c{color:#7A8496; font-style:italic;}
+.codebox .n{color:#E8B76A;}
+.method-desc{margin-top:16px; padding:16px 18px; background:var(--paper-2); border-left:3px solid var(--blue); border-radius:0 10px 10px 0;}
+.method-desc b{color:var(--blue);}
+
+/* ===== STATUS CODES ===== */
+.status-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:12px;}
+.status-chip{
+  border-radius:12px; padding:16px 16px; cursor:pointer; border:1.5px solid transparent; transition:.15s;
+  font-family:var(--mono);
+}
+.status-chip:hover{transform:translateY(-2px);}
+.status-chip.g{background:var(--green-soft); border-color:var(--green);}
+.status-chip.a{background:var(--amber-soft); border-color:var(--amber);}
+.status-chip.r{background:var(--red-soft); border-color:var(--red);}
+.status-chip .code{font-size:24px; font-weight:800;}
+.status-chip.g .code{color:var(--green);}
+.status-chip.a .code{color:var(--amber);}
+.status-chip.r .code{color:var(--red);}
+.status-chip .label{font-size:12px; font-weight:600; margin-top:4px; color:var(--ink);}
+.status-detail{
+  margin-top:16px; padding:16px 18px; border-radius:10px; background:var(--paper-2); font-size:14px;
+  border-left:3px solid var(--ink); display:none;
+}
+.status-detail.show{display:block; animation:fade .2s ease;}
+
+/* ===== AUTH TOGGLE ===== */
+.authbar{display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;}
+.authbtn{
+  font-family:var(--sans); font-weight:700; font-size:13.5px; padding:10px 20px; border-radius:10px;
+  border:1.5px solid var(--ink); background:var(--paper); cursor:pointer;
+}
+.authbtn.active{background:var(--blue); color:var(--paper); border-color:var(--blue);}
+.authpanel{display:none;}
+.authpanel.active{display:block; animation:fade .25s ease;}
+.seq{display:flex; flex-direction:column; gap:0; margin-top:18px;}
+.seq-step{
+  display:grid; grid-template-columns:34px 1fr; gap:14px; padding:12px 0; border-bottom:1px dashed var(--line);
+}
+.seq-step:last-child{border-bottom:none;}
+.seq-num{
+  width:34px; height:34px; border-radius:50%; background:var(--ink); color:var(--paper); display:flex;
+  align-items:center; justify-content:center; font-family:var(--mono); font-weight:700; font-size:13px;
+}
+.seq-step b{font-size:14.5px;}
+.seq-step span.meta{display:block; font-size:13px; color:var(--ink-soft); margin-top:2px;}
+
+/* ===== WORKFLOW TIMELINE ===== */
+.timeline{display:grid; grid-template-columns:repeat(5,1fr); gap:0; position:relative; margin-top:10px;}
+.timeline::before{
+  content:""; position:absolute; top:22px; left:5%; right:5%; height:2px; background:var(--line); z-index:0;
+}
+.tstep{position:relative; z-index:1; text-align:center; padding:0 8px;}
+.tstep .dot{
+  width:44px; height:44px; border-radius:50%; background:var(--paper); border:2.5px solid var(--blue);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 14px; font-family:var(--mono);
+  font-weight:800; color:var(--blue); font-size:15px; cursor:pointer; transition:.2s;
+}
+.tstep .dot:hover{background:var(--blue); color:var(--paper);}
+.tstep h4{font-family:var(--serif); font-size:14.5px; font-weight:600; margin:0 0 6px; min-height:36px;}
+.tstep p{font-size:12.5px; margin:0;}
+@media(max-width:860px){
+  .timeline{grid-template-columns:1fr; gap:26px;}
+  .timeline::before{display:none;}
+}
+
+/* ===== CASE STUDY ===== */
+.case-flow{display:flex; flex-direction:column; gap:14px; margin-top:18px;}
+.flow-row{display:grid; grid-template-columns:130px 1fr; gap:16px; align-items:start;}
+.flow-actor{
+  font-family:var(--mono); font-size:12px; font-weight:700; text-align:right; padding-top:4px; color:var(--blue);
+  text-transform:uppercase; letter-spacing:.04em;
+}
+.flow-bubble{
+  background:var(--paper); border:1.5px solid var(--line); border-left:3px solid var(--blue-2); border-radius:0 10px 10px 10px;
+  padding:12px 16px; font-size:14px;
+}
+.flow-bubble code{background:var(--paper-2); padding:2px 6px; border-radius:4px; font-family:var(--mono); font-size:12.5px;}
+
+/* ===== CHECKLIST ===== */
+.checklist{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+@media(max-width:860px){.checklist{grid-template-columns:1fr;}}
+.chk-item{
+  display:flex; gap:12px; align-items:flex-start; padding:14px 16px; background:var(--paper);
+  border:1.5px solid var(--line); border-radius:10px; cursor:pointer; transition:.15s;
+}
+.chk-item:hover{border-color:var(--blue);}
+.chk-item.done{background:var(--green-soft); border-color:var(--green);}
+.chk-box{
+  width:20px; height:20px; border-radius:5px; border:2px solid var(--ink); flex-shrink:0; margin-top:2px;
+  display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900;
+}
+.chk-item.done .chk-box{background:var(--green); border-color:var(--green); color:#fff;}
+.chk-item span{font-size:14px;}
+
+/* ===== QUIZ ===== */
+.quiz-card{margin-bottom:16px;}
+.quiz-q{font-weight:700; margin-bottom:12px; font-size:15px;}
+.quiz-opts{display:flex; flex-direction:column; gap:8px;}
+.quiz-opt{
+  text-align:left; padding:11px 16px; border-radius:8px; border:1.5px solid var(--line); background:var(--paper);
+  cursor:pointer; font-family:var(--sans); font-size:14px; transition:.15s;
+}
+.quiz-opt:hover{border-color:var(--blue);}
+.quiz-opt.correct{background:var(--green-soft); border-color:var(--green); font-weight:700;}
+.quiz-opt.wrong{background:var(--red-soft); border-color:var(--red);}
+.quiz-explain{margin-top:10px; font-size:13.5px; padding:10px 14px; background:var(--paper-2); border-radius:8px; display:none;}
+.quiz-explain.show{display:block;}
+
+/* ===== COMPARISON TABLE ===== */
+.cmp-table{width:100%; border-collapse:collapse; font-size:13.5px;}
+.cmp-table th{
+  text-align:left; font-family:var(--mono); font-size:11.5px; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink-soft); padding:8px 14px; border-bottom:2px solid var(--ink);
+}
+.cmp-table td{padding:11px 14px; border-bottom:1px solid var(--line); color:var(--ink-soft);}
+.cmp-table tr:last-child td{border-bottom:none;}
+.cmp-table td b{color:var(--ink);}
+.cmp-table tr:hover td{background:var(--paper-2);}
+
+/* ===== TYPE DIAGRAMS ===== */
+.type-diagram{
+  width:100%; height:auto; display:block; margin:4px 0 22px; background:var(--paper-2);
+  border-radius:14px; padding:10px; border:1px solid var(--line);
+}
+.type-diagram .lbl{font-family:var(--mono); font-size:11.5px; fill:var(--ink-soft);}
+.type-diagram .lbl-green{font-family:var(--mono); font-size:11.5px; fill:var(--green);}
+.type-diagram .lbl-amber{font-family:var(--mono); font-size:11.5px; fill:#8a5a10;}
+.type-diagram .box-txt{font-family:var(--sans); font-weight:700; font-size:14px; fill:var(--paper);}
+.type-diagram .box-txt-dark{font-family:var(--sans); font-weight:700; font-size:14px; fill:var(--ink);}
+.type-diagram .cap{font-family:var(--serif); font-size:13px; font-weight:600; fill:var(--ink);}
+
+/* ===== HISTORY TIMELINE ===== */
+.history-timeline{position:relative; padding-left:38px; margin-top:26px;}
+.history-timeline::before{
+  content:""; position:absolute; left:6px; top:6px; bottom:6px; width:2px; background:var(--line);
+}
+.history-item{position:relative; margin-bottom:34px;}
+.history-item:last-child{margin-bottom:0;}
+.history-item::before{
+  content:""; position:absolute; left:-38px; top:5px; width:14px; height:14px; border-radius:50%;
+  background:var(--blue); box-shadow:0 0 0 4px var(--paper), 0 0 0 5px var(--line);
+}
+.history-year{
+  font-family:var(--mono); font-size:13px; font-weight:800; color:var(--amber); letter-spacing:.03em;
+  display:block; margin-bottom:4px;
+}
+.history-item h4{font-family:var(--serif); font-size:19px; font-weight:600; margin:0 0 8px;}
+.history-item p{margin:0 0 8px; font-size:14.5px;}
+.history-item .problem{
+  font-size:13.5px; padding:10px 14px; background:var(--paper-2); border-radius:8px; margin-top:8px;
+  border-left:3px solid var(--blue-2);
+}
+.history-item .problem b{color:var(--blue);}
+
+/* ===== MISC ===== */
+.callout{
+  border-radius:12px; padding:18px 22px; background:var(--amber-soft); border-left:4px solid var(--amber); margin:20px 0;
+}
+.callout b{color:#8a5a10;}
+.pill-row{display:flex; flex-wrap:wrap; gap:8px; margin-top:14px;}
+.pill{font-family:var(--mono); font-size:11.5px; padding:5px 11px; background:var(--paper-2); border-radius:100px; border:1px solid var(--line);}
+footer{
+  border-top:2px solid var(--ink); padding:40px 0 60px; text-align:center; font-family:var(--mono); font-size:12.5px; color:var(--ink-soft);
+}
+::selection{background:var(--amber-soft);}
+</style>
+</head>
+<body>
+<div class="bg-fade"></div>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Tài liệu đào tạo · Business Analyst</div>
+  <h1 class="title">API, nhìn từ<br><em>góc của BA</em> — không phải của Dev</h1>
+  <p class="subtitle">Không viết code, không cần thuộc syntax — nhưng phải hiểu API đủ sâu để viết đúng requirement,
+  đặt đúng câu hỏi cho dev, và không bị "qua mặt" khi test tích hợp. Đây là cẩm nang thực chiến, đi thẳng vào việc.</p>
+  <div class="hero-meta">
+    <span class="tag blue">10 phút đọc</span>
+    <span class="tag">Có ví dụ thực tế</span>
+    <span class="tag">Tương tác — bấm để khám phá</span>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" id="toc">
+    <div class="toc-label">Nội dung</div>
+    <a href="#s1">01 · API là gì</a>
+    <a href="#s2">02 · Các loại API</a>
+    <a href="#s3">03 · Lịch sử hình thành API</a>
+    <a href="#s4">04 · Method (verb)</a>
+    <a href="#s5">05 · Request & Response</a>
+    <a href="#s6">06 · Từ click đến SQL</a>
+    <a href="#s7">07 · Status Code</a>
+    <a href="#s8">08 · Authentication</a>
+    <a href="#s9">09 · Tài liệu API</a>
+    <a href="#s10">10 · Quy trình BA làm với API</a>
+    <a href="#s11">11 · Case study</a>
+    <a href="#s12">12 · Checklist</a>
+    <a href="#s13">13 · Tự kiểm tra</a>
+  </nav>
+
+  <main>
+
+  <!-- ============ 01 API LÀ GÌ ============ -->
+  <section class="block" id="s1">
+    <div class="block-head"><span class="block-num">01</span><h2>API là gì — ẩn dụ nhà hàng</h2></div>
+    <p class="lead">API (Application Programming Interface) là <b>giao ước</b> cho phép hai hệ thống nói chuyện với nhau
+    mà không cần biết bên trong nhau làm gì. Với BA, cách dễ nhớ nhất là ẩn dụ nhà hàng:</p>
+
+    <div class="analogy">
+      <div class="cell">
+        <span class="icon">🧑‍💼</span>
+        <h4>Bạn (Client)</h4>
+        <small>Ứng dụng gọi API</small>
+        <p>Bạn không vào bếp tự nấu. Bạn chỉ gọi món qua thực đơn — giống app frontend gọi qua API, không đụng vào database.</p>
+      </div>
+      <div class="cell">
+        <span class="icon">🧾</span>
+        <h4>Người phục vụ (API)</h4>
+        <small>Endpoint + hợp đồng</small>
+        <p>Nhận yêu cầu theo đúng "thực đơn" (tài liệu API), chuyển vào bếp, mang kết quả ra — không tự ý thêm bớt.</p>
+      </div>
+      <div class="cell">
+        <span class="icon">🍳</span>
+        <h4>Nhà bếp (Server/DB)</h4>
+        <small>Backend xử lý</small>
+        <p>Nơi xử lý thật sự: tính toán, truy vấn dữ liệu, ghi vào hệ thống — bạn không cần thấy, chỉ cần nhận đúng kết quả.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>Vì sao BA cần quan tâm?</b> Trong mọi dự án tích hợp — CRM nối ERP, app đặt chỗ nối cổng thanh toán, portal nối
+      hệ thống thuế — ranh giới trách nhiệm giữa các bên chính là ranh giới API. BA không thiết kế API, nhưng BA
+      <b>định nghĩa hành vi nghiệp vụ</b> mà API phải đáp ứng, và là người dịch giữa "ngôn ngữ nghiệp vụ" và "ngôn ngữ kỹ thuật".
+    </div>
+  </section>
+
+  <!-- ============ 02 CÁC LOẠI API ============ -->
+  <section class="block" id="s2">
+    <div class="block-head"><span class="block-num">02</span><h2>Các loại API — không chỉ có REST</h2></div>
+    <p class="lead">Phần lớn dự án web/app hiện nay dùng REST, nhưng trong một hệ sinh thái thực tế (ngân hàng,
+    thuế, thanh toán, hệ thống nội bộ cũ), BA sẽ đụng ít nhất 2-3 loại khác. Biết phân biệt giúp BA không viết
+    requirement sai khuôn, và không ngạc nhiên khi đối tác nói "chúng tôi chỉ có SOAP" hay "dùng webhook nhé".</p>
+
+    <div class="tabbar" id="apiTypeTabs">
+      <button class="tabbtn active" data-apitype="rest">REST</button>
+      <button class="tabbtn" data-apitype="soap">SOAP</button>
+      <button class="tabbtn" data-apitype="graphql">GraphQL</button>
+      <button class="tabbtn" data-apitype="websocket">WebSocket</button>
+      <button class="tabbtn" data-apitype="grpc">gRPC</button>
+      <button class="tabbtn" data-apitype="webhook">Webhook</button>
+    </div>
+
+    <div class="tabpanel active" data-typepanel="rest">
+      <svg class="type-diagram" viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrRest1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+          <marker id="arrRest2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--green)"/></marker>
+        </defs>
+        <rect x="20" y="60" width="150" height="70" rx="12" fill="var(--blue)"/>
+        <text x="95" y="100" text-anchor="middle" class="box-txt">Client (App)</text>
+        <rect x="470" y="60" width="150" height="70" rx="12" fill="var(--ink)"/>
+        <text x="545" y="100" text-anchor="middle" class="box-txt">Server</text>
+        <text x="320" y="30" text-anchor="middle" class="cap">Mỗi lần cần gì → hỏi 1 lần, nhận đáp 1 lần</text>
+        <line x1="175" y1="80" x2="465" y2="80" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrRest1)"/>
+        <text x="320" y="70" text-anchor="middle" class="lbl">GET /units/UNIT-2201</text>
+        <line x1="465" y1="115" x2="175" y2="115" stroke="var(--green)" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrRest2)"/>
+        <text x="320" y="135" text-anchor="middle" class="lbl-green">200 OK   { status: "available" }</text>
+        <text x="320" y="170" text-anchor="middle" class="lbl">Mỗi tài nguyên = 1 địa chỉ URL riêng · dữ liệu dạng JSON dễ đọc</text>
+      </svg>
+      <div class="grid2">
+        <div>
+          <h3>🌐 REST (Representational State Transfer)</h3>
+          <p><b>Cách hoạt động:</b> mỗi "tài nguyên" (unit, booking, customer...) có một địa chỉ URL riêng; hành động
+          lên tài nguyên đó thể hiện qua HTTP method (GET/POST/PUT/PATCH/DELETE — xem mục 04). Dữ liệu trao đổi
+          thường là JSON, dễ đọc bằng mắt thường.</p>
+          <p><b>Vì sao phổ biến nhất:</b> đơn giản, không cần công cụ đặc biệt để test (trình duyệt/Postman đọc được
+          ngay), gần như mọi ngôn ngữ lập trình đều hỗ trợ sẵn.</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 8px;"><b>Dùng khi:</b> gần như mặc định cho mọi web app / mobile app hiện đại — CRUD
+          căn hộ, booking, khách hàng, broker...</p>
+          <p style="margin:0;"><b>Ví dụ trong REBE:</b> toàn bộ API quản trị inventory, pricing, hoa hồng đều là REST.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-typepanel="soap">
+      <svg class="type-diagram" viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrSoap1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+        </defs>
+        <text x="320" y="24" text-anchor="middle" class="cap">Mọi request/response đều bọc trong 1 "phong bì" XML chặt chẽ</text>
+        <rect x="10" y="65" width="110" height="60" rx="10" fill="var(--blue)"/>
+        <text x="65" y="100" text-anchor="middle" class="box-txt">Client</text>
+        <rect x="520" y="65" width="110" height="60" rx="10" fill="var(--ink)"/>
+        <text x="575" y="100" text-anchor="middle" class="box-txt">Server</text>
+        <rect x="185" y="45" width="270" height="130" rx="10" fill="none" stroke="var(--blue-2)" stroke-width="2" stroke-dasharray="3,3"/>
+        <text x="320" y="63" text-anchor="middle" class="lbl" style="font-weight:700;">&lt;Envelope&gt;  (SOAP XML)</text>
+        <rect x="200" y="72" width="240" height="34" rx="6" fill="var(--paper)" stroke="var(--line)"/>
+        <text x="320" y="93" text-anchor="middle" class="lbl">&lt;Header&gt; auth, msg-id &lt;/Header&gt;</text>
+        <rect x="200" y="114" width="240" height="48" rx="6" fill="var(--paper)" stroke="var(--line)"/>
+        <text x="320" y="142" text-anchor="middle" class="lbl">&lt;Body&gt; UpdateUnitStatus(...) &lt;/Body&gt;</text>
+        <line x1="120" y1="90" x2="182" y2="90" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrSoap1)"/>
+        <line x1="458" y1="90" x2="518" y2="90" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrSoap1)"/>
+        <text x="320" y="195" text-anchor="middle" class="lbl">Đi kèm 1 file mô tả riêng gọi là WSDL — quy định đúng field, kiểu dữ liệu, thứ tự</text>
+      </svg>
+      <div class="grid2">
+        <div>
+          <h3>📜 SOAP (Simple Object Access Protocol)</h3>
+          <p><b>Cách hoạt động:</b> đóng gói toàn bộ request/response bằng XML theo một khuôn rất chặt chẽ (envelope,
+          header, body), thường đi kèm một file mô tả gọi là <b>WSDL</b> — giống bản "hợp đồng" quy định chính xác
+          từng field, kiểu dữ liệu, thứ tự.</p>
+          <p><b>Vì sao vẫn tồn tại:</b> các hệ thống lõi ngân hàng (core banking), hệ thống thuế, bảo hiểm ở Việt Nam
+          thường xây từ 10-15 năm trước, khi SOAP là chuẩn phổ biến — chi phí thay thế rất lớn nên họ vẫn giữ.</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 8px;"><b>Dùng khi:</b> tích hợp bắt buộc phải theo, không phải do team mình chọn —
+          thường gặp khi nối với ngân hàng (xác minh khoản vay mua nhà), cơ quan thuế (tra cứu hóa đơn điện tử),
+          hoặc phần mềm ERP đời cũ.</p>
+          <p style="margin:0;"><b>Điều BA cần lưu ý:</b> XML dài dòng và khó đọc hơn JSON nhiều — nên dành thời gian
+          nhờ dev "dịch" WSDL sang bảng field trước khi viết use case, đừng tự đọc XML thô.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-typepanel="graphql">
+      <svg class="type-diagram" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrGql1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+          <marker id="arrGql2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--green)"/></marker>
+        </defs>
+        <text x="320" y="18" text-anchor="middle" class="cap">1 endpoint duy nhất — client tự chọn field mình cần</text>
+        <rect x="20" y="35" width="230" height="46" rx="8" fill="var(--paper)" stroke="var(--blue)" stroke-width="1.5"/>
+        <text x="135" y="63" text-anchor="middle" class="lbl" style="font-weight:700;">{ unit(code:"2201"){ price status } }</text>
+        <line x1="135" y1="81" x2="300" y2="105" stroke="var(--ink)" stroke-width="2" marker-end="url(#arrGql1)"/>
+        <ellipse cx="320" cy="120" rx="60" ry="28" fill="var(--blue)"/>
+        <text x="320" y="125" text-anchor="middle" class="box-txt">/graphql</text>
+        <line x1="280" y1="145" x2="140" y2="175" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrGql1)"/>
+        <line x1="320" y1="148" x2="320" y2="175" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrGql1)"/>
+        <line x1="360" y1="145" x2="500" y2="175" stroke="var(--ink)" stroke-width="1.5" marker-end="url(#arrGql1)"/>
+        <rect x="70" y="178" width="140" height="34" rx="6" fill="var(--paper-2)" stroke="var(--line)"/>
+        <text x="140" y="199" text-anchor="middle" class="lbl">Units DB</text>
+        <rect x="250" y="178" width="140" height="34" rx="6" fill="var(--paper-2)" stroke="var(--line)"/>
+        <text x="320" y="199" text-anchor="middle" class="lbl">Pricing Service</text>
+        <rect x="430" y="178" width="140" height="34" rx="6" fill="var(--paper-2)" stroke="var(--line)"/>
+        <text x="500" y="199" text-anchor="middle" class="lbl">Broker Service</text>
+        <path d="M380,120 C 460,120 460,55 550,45" stroke="var(--green)" stroke-width="2" stroke-dasharray="5,4" fill="none" marker-end="url(#arrGql2)"/>
+        <text x="560" y="40" text-anchor="middle" class="lbl-green" style="font-weight:700;">{ price, status }</text>
+      </svg>
+      <div class="grid2">
+        <div>
+          <h3>🧩 GraphQL</h3>
+          <p><b>Cách hoạt động:</b> chỉ có <u>một endpoint duy nhất</u>; thay vì server quyết định trả về field gì
+          (như REST), <b>client tự khai báo</b> mình cần đúng những field nào trong một câu query — server trả về
+          chính xác từng đó, không thừa không thiếu.</p>
+          <p><b>Vấn đề nó giải quyết:</b> tránh tình trạng REST "over-fetching" (nhận về 20 field nhưng chỉ dùng 3)
+          hoặc phải gọi 3-4 API liên tiếp mới đủ dữ liệu cho một màn hình dashboard.</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 8px;"><b>Dùng khi:</b> màn hình tổng hợp/báo cáo cần dữ liệu ghép từ nhiều nguồn
+          (vd dashboard tổng quan: căn hộ + broker + hoa hồng + trạng thái thanh toán trong 1 màn hình).</p>
+          <p style="margin:0;"><b>Điều BA cần lưu ý:</b> vì client tự chọn field, việc kiểm soát phân quyền theo
+          từng field (không phải theo endpoint) cần đặc tả kỹ hơn — hỏi dev rõ ai được query field nào.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-typepanel="websocket">
+      <svg class="type-diagram" viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrWs1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--blue-2)"/></marker>
+          <marker id="arrWs2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"/></marker>
+        </defs>
+        <text x="320" y="20" text-anchor="middle" class="cap">Một kết nối luôn mở — ai có tin thì gửi ngay, không cần hỏi trước</text>
+        <rect x="20" y="70" width="130" height="60" rx="10" fill="var(--blue)"/>
+        <text x="85" y="105" text-anchor="middle" class="box-txt">Broker A</text>
+        <rect x="490" y="70" width="130" height="60" rx="10" fill="var(--ink)"/>
+        <text x="555" y="105" text-anchor="middle" class="box-txt">Server</text>
+        <line x1="155" y1="100" x2="485" y2="100" stroke="var(--line)" stroke-width="8"/>
+        <text x="320" y="150" text-anchor="middle" class="lbl">↑ đường dây giữ nguyên trong suốt phiên làm việc ↑</text>
+        <line x1="230" y1="85" x2="300" y2="60" stroke="var(--blue-2)" stroke-width="2" marker-end="url(#arrWs1)"/>
+        <text x="265" y="50" text-anchor="middle" class="lbl">subscribe: unit-2201</text>
+        <line x1="420" y1="88" x2="330" y2="55" stroke="var(--amber)" stroke-width="2" marker-end="url(#arrWs2)"/>
+        <text x="440" y="45" text-anchor="middle" class="lbl-amber">"unit-2201 → reserved"</text>
+        <line x1="480" y1="115" x2="400" y2="135" stroke="var(--amber)" stroke-width="2" marker-end="url(#arrWs2)"/>
+      </svg>
+      <div class="grid2">
+        <div>
+          <h3>⚡ WebSocket</h3>
+          <p><b>Cách hoạt động:</b> mở một "đường dây" kết nối liên tục giữa client và server (thay vì mỗi lần
+          gọi-nhận rồi đóng như REST); hai bên có thể gửi dữ liệu cho nhau <b>bất cứ lúc nào</b>, không cần chờ
+          hỏi trước — gọi là giao tiếp hai chiều thời gian thực.</p>
+          <p><b>Khác REST ở đâu:</b> REST là "hỏi rồi mới đáp"; WebSocket là "ai có tin gì mới thì báo ngay", không
+          cần client phải liên tục hỏi lại (polling) mỗi vài giây.</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 8px;"><b>Dùng khi:</b> cần cập nhật tức thời cho nhiều người dùng cùng lúc — ví dụ
+          kinh điển trong bất động sản: <b>khi 1 broker vừa giữ chỗ 1 căn hộ, tất cả broker khác đang xem màn hình
+          inventory phải thấy căn đó chuyển sang "Đã giữ" ngay lập tức</b>, không cần bấm F5.</p>
+          <p style="margin:0;"><b>Điều BA cần lưu ý:</b> hạ tầng phức tạp và tốn tài nguyên server hơn REST — chỉ
+          nên đề xuất khi thật sự cần "thời gian thực", không dùng cho màn hình tra cứu thông thường.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-typepanel="grpc">
+      <svg class="type-diagram" viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrGrpc1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#8B6BA8"/></marker>
+        </defs>
+        <text x="320" y="20" text-anchor="middle" class="cap">Nhiều luồng gọi cùng lúc, chung 1 kết nối HTTP/2 — dữ liệu nhị phân, không phải JSON</text>
+        <rect x="20" y="60" width="140" height="60" rx="10" fill="var(--blue)"/>
+        <text x="90" y="95" text-anchor="middle" class="box-txt">Service: Pricing</text>
+        <rect x="480" y="60" width="140" height="60" rx="10" fill="var(--ink)"/>
+        <text x="550" y="95" text-anchor="middle" class="box-txt">Service: Inventory</text>
+        <rect x="180" y="55" width="280" height="70" rx="8" fill="none" stroke="#8B6BA8" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="320" y="50" text-anchor="middle" class="lbl">1 kết nối HTTP/2 — nhiều "làn" song song</text>
+        <line x1="200" y1="72" x2="440" y2="72" stroke="#8B6BA8" stroke-width="2" marker-end="url(#arrGrpc1)"/>
+        <text x="320" y="68" text-anchor="middle" class="lbl">stream 1 · GetPrice()</text>
+        <line x1="200" y1="90" x2="440" y2="90" stroke="#8B6BA8" stroke-width="2" marker-end="url(#arrGrpc1)"/>
+        <text x="320" y="86" text-anchor="middle" class="lbl">stream 2 · CheckStock()</text>
+        <line x1="440" y1="108" x2="200" y2="108" stroke="#8B6BA8" stroke-width="2" marker-end="url(#arrGrpc1)"/>
+        <text x="320" y="104" text-anchor="middle" class="lbl">stream 3 · phản hồi nhị phân (protobuf)</text>
+        <text x="320" y="150" text-anchor="middle" class="lbl">Gói tin nhỏ hơn, xử lý nhanh hơn JSON nhiều lần — đổi lại người không đọc trực tiếp được</text>
+      </svg>
+      <div class="grid2">
+        <div>
+          <h3>🔧 gRPC</h3>
+          <p><b>Cách hoạt động:</b> giống REST ở việc client gọi server, nhưng dùng định dạng nhị phân
+          (protobuf) thay vì JSON/XML dạng text — gói tin nhỏ hơn, xử lý nhanh hơn nhiều lần, đổi lại con người
+          không đọc trực tiếp được dữ liệu (phải qua công cụ chuyên dụng).</p>
+          <p><b>Vì sao tồn tại riêng:</b> khi hệ thống backend được chia nhỏ thành nhiều dịch vụ (microservices) và
+          các dịch vụ đó gọi nhau hàng nghìn lần/giây, tốc độ trở thành ưu tiên hơn khả năng đọc bằng mắt.</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 8px;"><b>Dùng khi:</b> giao tiếp <i>nội bộ giữa các service backend với nhau</i>
+          (vd service Pricing gọi service Inventory) — hầu như không lộ ra ngoài cho app/web client dùng trực tiếp.</p>
+          <p style="margin:0;"><b>Điều BA cần lưu ý:</b> đây là lựa chọn kiến trúc của dev, BA hiếm khi cần đặc tả
+          trực tiếp — chỉ cần biết để không nhầm lẫn khi nghe dev nhắc đến trong họp kỹ thuật.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabpanel" data-typepanel="webhook">
+      <svg class="type-diagram" viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrWh1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink-soft)"/></marker>
+          <marker id="arrWh2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--amber)"/></marker>
+        </defs>
+        <text x="320" y="18" text-anchor="middle" class="cap">Không cần hỏi liên tục — bên kia tự gọi ngược khi có chuyện xảy ra</text>
+
+        <rect x="20" y="80" width="150" height="60" rx="10" fill="var(--ink)"/>
+        <text x="95" y="115" text-anchor="middle" class="box-txt">REBE App</text>
+        <rect x="470" y="80" width="150" height="60" rx="10" fill="var(--amber)"/>
+        <text x="545" y="115" text-anchor="middle" class="box-txt">Cổng thanh toán</text>
+
+        <line x1="175" y1="70" x2="465" y2="70" stroke="var(--ink-soft)" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrWh1)"/>
+        <text x="320" y="60" text-anchor="middle" class="lbl">Bước 0 — đăng ký trước: "khi có kết quả, POST về url này giúp tôi"</text>
+
+        <line x1="465" y1="150" x2="175" y2="150" stroke="var(--amber)" stroke-width="2.5" marker-end="url(#arrWh2)"/>
+        <text x="320" y="170" text-anchor="middle" class="lbl-amber" style="font-weight:700;">POST /webhooks/payment-result   { status: "paid" }</text>
+        <text x="320" y="185" text-anchor="middle" class="lbl">— gửi đúng lúc khách vừa thanh toán xong, không ai phải hỏi trước</text>
+
+        <text x="95" y="55" text-anchor="middle" class="lbl" style="text-decoration:line-through;">GET status? GET status? ...</text>
+      </svg>
+      <div class="grid2">
+        <div>
+          <h3>🔔 Webhook — "API gọi ngược"</h3>
+          <p><b>Cách hoạt động:</b> không phải một loại API riêng mà là một <b>kiểu mẫu (pattern)</b> — thay vì hệ
+          thống A phải liên tục hỏi hệ thống B "xong chưa, xong chưa" (gọi là polling), hệ thống B sẽ <b>chủ động gọi
+          ngược lại</b> một URL mà A đã đăng ký sẵn, ngay khi có sự kiện xảy ra.</p>
+          <p><b>Ví dụ đã gặp:</b> chính là bước cổng thanh toán gọi ngược về REBE trong case study ở mục 11 — REBE
+          không cần hỏi "khách trả tiền chưa" mỗi giây, mà ngồi chờ cổng thanh toán "báo tin".</p>
+        </div>
+        <div class="card">
+          <p style="margin:0 0 8px;"><b>Dùng khi:</b> nhận thông báo sự kiện từ bên thứ 3 — kết quả thanh toán, kết
+          quả ký hợp đồng điện tử (e-signature), trạng thái duyệt hồ sơ vay ngân hàng.</p>
+          <p style="margin:0;"><b>Điều BA bắt buộc phải đặc tả:</b> việc xác thực webhook thật (không phải giả mạo,
+          qua chữ ký bảo mật), và cơ chế dự phòng khi webhook bị mất — nêu rõ trong mục 11.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:22px; overflow-x:auto;">
+      <h3 style="margin-bottom:16px;">Bảng so sánh nhanh</h3>
+      <table class="cmp-table">
+        <thead>
+          <tr><th>Loại</th><th>Định dạng dữ liệu</th><th>Kiểu giao tiếp</th><th>BA thường gặp ở đâu</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><b>REST</b></td><td>JSON</td><td>Hỏi → Đáp</td><td>Mặc định cho hầu hết web/app nghiệp vụ</td></tr>
+          <tr><td><b>SOAP</b></td><td>XML</td><td>Hỏi → Đáp (chặt chẽ)</td><td>Ngân hàng, thuế, hệ thống lõi cũ</td></tr>
+          <tr><td><b>GraphQL</b></td><td>JSON (tùy chọn field)</td><td>Hỏi → Đáp (linh hoạt)</td><td>Dashboard/báo cáo tổng hợp</td></tr>
+          <tr><td><b>WebSocket</b></td><td>JSON/binary</td><td>Hai chiều, liên tục</td><td>Cập nhật trạng thái real-time (inventory, chat)</td></tr>
+          <tr><td><b>gRPC</b></td><td>Binary (protobuf)</td><td>Hỏi → Đáp (nội bộ)</td><td>Service-to-service, ít khi BA đặc tả trực tiếp</td></tr>
+          <tr><td><b>Webhook</b></td><td>JSON (thường)</td><td>Gọi ngược khi có sự kiện</td><td>Thanh toán, e-sign, đối tác báo kết quả</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <b>Ghi nhớ cho BA:</b> khi nhận một yêu cầu tích hợp mới, câu hỏi đầu tiên không phải "field nào" mà là
+      <b>"đối tác cung cấp API dạng gì?"</b> — câu trả lời quyết định công cụ test (Postman cho REST/GraphQL, SoapUI
+      cho SOAP), cách viết use case (đồng bộ hay bất đồng bộ), và cả việc ước lượng effort tích hợp cho dự án.
+    </div>
+  </section>
+
+  <!-- ============ 03 LỊCH SỬ ============ -->
+  <section class="block" id="s3">
+    <div class="block-head"><span class="block-num">03</span><h2>Lịch sử hình thành — mỗi loại API ra đời để giải quyết 1 nỗi đau cụ thể</h2></div>
+    <p class="lead">Không có loại API nào ra đời vì "muốn có cái mới" — mỗi cái xuất hiện đúng vào lúc công nghệ
+    trước đó bắt đầu bộc lộ giới hạn. Hiểu bối cảnh ra đời giúp BA trả lời được câu hỏi quan trọng nhất: <b>vì sao
+    hệ thống này vẫn còn dùng công nghệ "cũ"</b> — thường không phải vì lạc hậu, mà vì bài toán gốc của nó chưa
+    từng thay đổi.</p>
+
+    <div class="history-timeline">
+      <div class="history-item">
+        <span class="history-year">1998 — SOAP</span>
+        <h4>Khi các tập đoàn lớn không "nói chuyện" được với nhau</h4>
+        <p>Cuối thập niên 1990, mỗi hãng phần mềm lớn (Microsoft, IBM, Sun...) có chuẩn giao tiếp riêng giữa các
+        chương trình — hệ thống Java của ngân hàng A không gọi thẳng được hệ thống .NET của đối tác B. Nhóm kỹ sư
+        tại Microsoft (trong đó có Dave Winer, Don Box) xây dựng SOAP như một "ngôn ngữ chung" trung lập nền tảng,
+        đóng gói dữ liệu bằng XML — định dạng lúc đó được xem là chuẩn mực cho dữ liệu có cấu trúc, nghiêm ngặt.</p>
+        <div class="problem"><b>Nỗi đau nó giải quyết:</b> hai hệ thống khác ngôn ngữ lập trình, khác nền tảng, vẫn
+        gọi được lẫn nhau qua một hợp đồng (WSDL) rất chặt chẽ — đúng nhu cầu của ngân hàng, bảo hiểm, chính phủ,
+        nơi độ chính xác quan trọng hơn tốc độ phát triển.</div>
+      </div>
+
+      <div class="history-item">
+        <span class="history-year">2000 — REST</span>
+        <h4>Khi một tiến sĩ nhận ra web vốn đã "đúng" từ đầu</h4>
+        <p>Roy Fielding — một trong những người đồng viết ra chuẩn HTTP — bảo vệ luận án tiến sĩ, đúc kết lại
+        chính cách world wide web đã vận hành suốt nhiều năm (mỗi trang có 1 địa chỉ URL, thao tác qua các
+        method HTTP đơn giản) thành một kiểu kiến trúc chính thức, đặt tên là REST. Ông không phát minh ra công
+        nghệ mới — ông <i>gọi tên</i> và hệ thống hóa thứ đã hoạt động tốt.</p>
+        <div class="problem"><b>Nỗi đau nó giải quyết:</b> SOAP quá nặng nề (XML dài dòng, phải có WSDL, tooling
+        phức tạp) cho phần lớn ứng dụng web thông thường. REST cho lập trình viên một cách nhẹ nhàng hơn nhiều để
+        đạt cùng mục đích — đây là lý do REST dần trở thành mặc định cho web/app hiện đại.</div>
+      </div>
+
+      <div class="history-item">
+        <span class="history-year">2007 — Webhook</span>
+        <h4>Khi việc "hỏi liên tục" trở nên quá tốn kém</h4>
+        <p>Web bắt đầu có nhiều dịch vụ công khai API (PayPal, Twitter...), và lập trình viên phải viết vòng lặp
+        liên tục hỏi "có gì mới chưa?" mỗi vài giây (gọi là polling) — vừa tốn băng thông, vừa chậm. Năm 2007,
+        Jeff Lindsay đặt tên "webhook" cho mô hình ngược lại: đăng ký sẵn 1 địa chỉ, để hệ thống kia <i>chủ động
+        gọi tới báo tin</i> ngay khi có sự kiện, thay vì mình phải liên tục hỏi.</p>
+        <div class="problem"><b>Nỗi đau nó giải quyết:</b> giảm tải cho cả hai bên khi cần biết "có gì mới" —
+        chính là cơ chế đứng sau bước cổng thanh toán báo kết quả về REBE ở case study đã học.</div>
+      </div>
+
+      <div class="history-item">
+        <span class="history-year">2011 — WebSocket</span>
+        <h4>Khi web cần "thời gian thực" thật sự</h4>
+        <p>Trước 2011, muốn làm chat hay dashboard cập nhật liên tục, lập trình viên phải "chế" bằng cách cho
+        trình duyệt liên tục hỏi lại (long-polling) — vừa nặng server, vừa có độ trễ. WebSocket được chuẩn hóa
+        chính thức năm 2011 (RFC 6455), cho phép mở một kết nối liên tục, hai chiều, thật sự tức thời giữa
+        trình duyệt và server.</p>
+        <div class="problem"><b>Nỗi đau nó giải quyết:</b> nhiều người dùng cùng cần thấy 1 thay đổi ngay lập tức
+        — đúng ví dụ nhiều broker cùng xem 1 màn hình inventory đã nhắc ở mục 02.</div>
+      </div>
+
+      <div class="history-item">
+        <span class="history-year">2012 → 2015 — GraphQL</span>
+        <h4>Khi Facebook Mobile "đói" dữ liệu nhưng mạng thì yếu</h4>
+        <p>Năm 2012, đội ngũ phát triển app di động của Facebook đối mặt bài toán: News Feed cần ghép dữ liệu từ
+        rất nhiều nguồn, nhưng REST buộc phải gọi nhiều endpoint liên tiếp hoặc nhận về dư thừa dữ liệu — rất tốn
+        cho mạng di động thời đó. Họ tự xây GraphQL để giải quyết nội bộ, rồi mở mã nguồn công khai năm 2015.</p>
+        <div class="problem"><b>Nỗi đau nó giải quyết:</b> để client tự quyết định cần đúng field nào, giảm số
+        lượt gọi và dung lượng dữ liệu thừa — đúng nhu cầu của các màn hình dashboard tổng hợp.</div>
+      </div>
+
+      <div class="history-item">
+        <span class="history-year">~2001 → 2015 — gRPC</span>
+        <h4>Khi hàng nghìn dịch vụ nội bộ Google cần nói chuyện cực nhanh</h4>
+        <p>Từ đầu những năm 2000, Google đã dùng một hệ thống RPC nội bộ tên "Stubby" để hàng nghìn service trong
+        các trung tâm dữ liệu gọi lẫn nhau với tốc độ rất cao. Năm 2015, Google viết lại hệ thống này dựa trên
+        chuẩn mở (giao thức HTTP/2 và định dạng nhị phân Protocol Buffers) rồi công bố ra công chúng với tên gRPC.</p>
+        <div class="problem"><b>Nỗi đau nó giải quyết:</b> khi tốc độ giao tiếp giữa các service nội bộ quan
+        trọng hơn khả năng đọc bằng mắt thường — đây vẫn là lý do gRPC hiếm khi lộ ra ngoài cho BA đặc tả trực tiếp.</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>Bài học rút ra cho BA:</b> dòng thời gian trên không phải một cuộc "thay thế" tuần tự — SOAP không biến
+      mất khi REST ra đời, WebSocket không thay thế REST. Mỗi loại vẫn tồn tại song song vì bài toán gốc của nó
+      chưa hề biến mất: ngân hàng vẫn cần hợp đồng dữ liệu chặt chẽ (SOAP), web thông thường vẫn cần sự đơn giản
+      (REST), ứng dụng cần cập nhật tức thời vẫn cần hai chiều (WebSocket). Khi review một hệ thống dùng công nghệ
+      "cũ", câu hỏi đúng không phải "sao không nâng cấp" mà là <b>"bài toán gốc ở đây là gì, và công nghệ đó có
+      còn giải đúng bài toán ấy không?"</b>
+    </div>
+  </section>
+
+  <!-- ============ 04 METHOD ============ -->
+  <section class="block" id="s4">
+    <div class="block-head"><span class="block-num">04</span><h2>4-5 "động từ" mà mọi API đều dùng</h2></div>
+    <p>Mỗi request gửi đi đều mang một <b>HTTP method</b> — nó nói cho server biết bạn muốn <i>làm gì</i>, tương tự
+    động từ trong câu nghiệp vụ: xem, tạo mới, sửa toàn bộ, sửa một phần, hoặc xóa.</p>
+
+    <div class="tabbar" id="methodTabs">
+      <button class="tabbtn active" data-method="GET">GET</button>
+      <button class="tabbtn" data-method="POST">POST</button>
+      <button class="tabbtn" data-method="PUT">PUT</button>
+      <button class="tabbtn" data-method="PATCH">PATCH</button>
+      <button class="tabbtn" data-method="DELETE">DELETE</button>
+    </div>
+
+    <div class="tabpanel active" data-panel="GET">
+      <div class="codebox"><span class="k">GET</span> /api/v1/units/UNIT-2201 <span class="c">// lấy thông tin 1 căn hộ</span>
+Host: api.rebe-project.vn
+Authorization: Bearer &lt;token&gt;
+
+<span class="c">// Response 200 OK</span>
+{
+  <span class="n">"unit_code"</span>: <span class="s">"UNIT-2201"</span>,
+  <span class="n">"status"</span>: <span class="s">"available"</span>,
+  <span class="n">"price"</span>: 3200000000
+}</div>
+      <div class="method-desc"><b>Nghiệp vụ tương ứng:</b> "Xem trạng thái căn hộ", "Tra cứu đơn hàng", "Lấy danh sách khách hàng".
+      GET không thay đổi dữ liệu — an toàn để gọi lại nhiều lần (idempotent). Nếu BA thấy màn hình chỉ <i>hiển thị</i>
+      dữ liệu, gần như chắc chắn phía sau là GET.</div>
+    </div>
+
+    <div class="tabpanel" data-panel="POST">
+      <div class="codebox"><span class="k">POST</span> /api/v1/bookings <span class="c">// tạo một booking giữ chỗ mới</span>
+Content-Type: application/json
+
+{
+  <span class="n">"unit_code"</span>: <span class="s">"UNIT-2201"</span>,
+  <span class="n">"customer_id"</span>: <span class="s">"CUS-8842"</span>,
+  <span class="n">"deposit_amount"</span>: 50000000
+}
+
+<span class="c">// Response 201 Created</span>
+{ <span class="n">"booking_id"</span>: <span class="s">"BK-100931"</span>, <span class="n">"status"</span>: <span class="s">"pending_confirm"</span> }</div>
+      <div class="method-desc"><b>Nghiệp vụ tương ứng:</b> "Tạo booking mới", "Đăng ký tài khoản", "Gửi đơn đặt hàng".
+      Gọi 2 lần = tạo ra 2 bản ghi — đây là điểm BA hay bỏ sót khi viết use case: phải nêu rõ quy tắc chống trùng
+      (idempotency key, khóa unique) để tránh double-booking.</div>
+    </div>
+
+    <div class="tabpanel" data-panel="PUT">
+      <div class="codebox"><span class="k">PUT</span> /api/v1/units/UNIT-2201 <span class="c">// ghi đè toàn bộ thông tin căn hộ</span>
+
+{
+  <span class="n">"status"</span>: <span class="s">"sold"</span>,
+  <span class="n">"price"</span>: 3200000000,
+  <span class="n">"broker_id"</span>: <span class="s">"BRK-021"</span>
+}
+<span class="c">// Response 200 OK — toàn bộ object được thay bằng dữ liệu mới</span></div>
+      <div class="method-desc"><b>Nghiệp vụ tương ứng:</b> "Cập nhật lại toàn bộ hồ sơ căn hộ". Lưu ý: PUT thường
+      yêu cầu gửi <i>đầy đủ</i> mọi trường — thiếu trường nào, trường đó có thể bị xóa/reset. Đây là chi tiết BA cần
+      làm rõ với dev khi thiết kế form edit, tránh mất dữ liệu ngoài ý muốn.</div>
+    </div>
+
+    <div class="tabpanel" data-panel="PATCH">
+      <div class="codebox"><span class="k">PATCH</span> /api/v1/units/UNIT-2201 <span class="c">// chỉ sửa 1 phần</span>
+
+{ <span class="n">"status"</span>: <span class="s">"reserved"</span> }
+
+<span class="c">// Response 200 OK — chỉ field "status" thay đổi, các field khác giữ nguyên</span></div>
+      <div class="method-desc"><b>Nghiệp vụ tương ứng:</b> "Chỉ đổi trạng thái căn hộ sang Đã giữ chỗ", không đụng
+      giá hay broker. PATCH an toàn hơn PUT cho các thao tác "cập nhật một field" — nên ưu tiên đề xuất PATCH khi
+      viết requirement cho các màn hình đổi trạng thái đơn lẻ.</div>
+    </div>
+
+    <div class="tabpanel" data-panel="DELETE">
+      <div class="codebox"><span class="k">DELETE</span> /api/v1/bookings/BK-100931 <span class="c">// hủy booking</span>
+
+<span class="c">// Response 204 No Content</span></div>
+      <div class="method-desc"><b>Nghiệp vụ tương ứng:</b> "Hủy đơn", "Xóa broker khỏi hệ thống". Câu hỏi BA luôn
+      phải đặt ra: đây là <b>xóa cứng</b> (mất vĩnh viễn) hay <b>xóa mềm</b> (soft-delete, đổi cờ is_deleted để còn
+      truy vết)? Với dữ liệu tài chính/pháp lý bất động sản, gần như luôn chọn soft-delete.</div>
+    </div>
+  </section>
+
+  <!-- ============ 03 REQUEST/RESPONSE ============ -->
+  <section class="block" id="s5">
+    <div class="block-head"><span class="block-num">05</span><h2>Giải phẫu một Request / Response</h2></div>
+    <p>Khi đọc tài liệu API (Swagger/Postman), BA sẽ luôn gặp 4 phần này — hiểu rõ từng phần giúp BA viết
+    requirement không bị thiếu field, thiếu điều kiện.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3>📤 Request — thứ bạn gửi đi</h3>
+        <p><b>Endpoint & Method:</b> địa chỉ + hành động, vd <code>POST /bookings</code></p>
+        <p><b>Headers:</b> thông tin đi kèm không thuộc dữ liệu chính — vd token xác thực, ngôn ngữ, định dạng dữ liệu.</p>
+        <p><b>Params:</b> biến gắn trên URL, vd <code>/units/{unit_code}</code> hoặc query <code>?status=available&page=2</code></p>
+        <p><b>Body:</b> dữ liệu nghiệp vụ thực sự, thường dạng JSON — đây là phần BA cần đặc tả kỹ nhất: field nào bắt buộc, kiểu dữ liệu, giá trị hợp lệ.</p>
+      </div>
+      <div class="card">
+        <h3>📥 Response — thứ bạn nhận lại</h3>
+        <p><b>Status code:</b> kết quả tổng quát (thành công/lỗi) — xem mục 07.</p>
+        <p><b>Headers:</b> thông tin bổ sung, vd rate-limit còn lại, loại nội dung trả về.</p>
+        <p><b>Body:</b> dữ liệu trả về hoặc thông báo lỗi — BA cần yêu cầu dev trả lỗi có <i>mã lỗi nghiệp vụ</i> rõ ràng
+        (vd <code>ERR_UNIT_ALREADY_BOOKED</code>) thay vì chỉ "Có lỗi xảy ra", để tester và support dễ tra cứu.</p>
+      </div>
+    </div>
+    <div class="callout">
+      <b>Mẹo viết requirement:</b> khi đặc tả một tính năng tích hợp, hãy lập bảng field theo 4 cột:
+      <i>Tên field · Bắt buộc? · Kiểu dữ liệu · Quy tắc nghiệp vụ</i>. Đây chính là bản dịch của "Request Body" sang
+      ngôn ngữ BRD/SRS mà dev có thể map thẳng vào code.
+    </div>
+  </section>
+
+  <!-- ============ 05 TỪ CLICK ĐẾN SQL ============ -->
+  <section class="block" id="s6">
+    <div class="block-head"><span class="block-num">06</span><h2>Từ một cú click đến câu lệnh SQL</h2></div>
+    <p class="lead">Đây là phần nối lại tất cả mục 01-05 thành một đường dây liền mạch — trace đúng những gì xảy ra
+    khi người dùng bấm nút "Giữ chỗ" trên màn hình, cho tới khi một dòng dữ liệu được ghi vào database.</p>
+
+    <div class="card">
+      <h3 style="margin-bottom:16px;">10 bước, từ ngón tay đến ổ đĩa</h3>
+      <div class="seq">
+        <div class="seq-step"><div class="seq-num">1</div><div><b>Người dùng bấm nút "Giữ chỗ"</b><span class="meta">Trình duyệt phát sinh một sự kiện <code style="font-family:var(--mono);">click</code> gắn trên nút đó.</span></div></div>
+        <div class="seq-step"><div class="seq-num">2</div><div><b>JavaScript "bắt" sự kiện click</b><span class="meta">Một hàm đã được gắn sẵn vào nút (event listener) được kích hoạt, đọc dữ liệu đang hiển thị trên form/màn hình.</span></div></div>
+        <div class="seq-step"><div class="seq-num">3</div><div><b>Gói dữ liệu thành 1 HTTP request</b><span class="meta">JS đóng gói method (POST), địa chỉ (URL), headers (token), và body (unit_code, customer_id, deposit_amount).</span></div></div>
+        <div class="seq-step"><div class="seq-num">4</div><div><b>Request đi qua mạng đến server</b><span class="meta">Có thể qua load balancer, API gateway trước khi tới đúng server xử lý.</span></div></div>
+        <div class="seq-step"><div class="seq-num">5</div><div><b>Router khớp đúng "địa chỉ"</b><span class="meta">Server đối chiếu <code style="font-family:var(--mono);">POST /api/bookings</code> với danh sách route đã khai báo, tìm ra đúng hàm xử lý (controller).</span></div></div>
+        <div class="seq-step"><div class="seq-num">6</div><div><b>Kiểm tra xác thực & dữ liệu đầu vào</b><span class="meta">Token hợp lệ không (mục 08)? Field bắt buộc có đủ không, đúng kiểu dữ liệu không?</span></div></div>
+        <div class="seq-step"><div class="seq-num">7</div><div><b>Áp quy tắc nghiệp vụ</b><span class="meta">Truy vấn nhanh để kiểm tra: căn hộ này còn "available" không? Nếu đã có người giữ → dừng lại, trả 409 (mục 07).</span></div></div>
+        <div class="seq-step"><div class="seq-num">8</div><div><b>Data access layer sinh câu lệnh SQL</b><span class="meta">Các giá trị từ request body được truyền vào làm tham số của câu <code style="font-family:var(--mono);">INSERT</code>, không dán thẳng chuỗi (xem cảnh báo SQL Injection bên dưới).</span></div></div>
+        <div class="seq-step"><div class="seq-num">9</div><div><b>Database thực thi và trả kết quả</b><span class="meta">Một dòng mới xuất hiện trong bảng <code style="font-family:var(--mono);">bookings</code>, DB trả về id vừa tạo.</span></div></div>
+        <div class="seq-step"><div class="seq-num">10</div><div><b>Response quay lại frontend, giao diện cập nhật</b><span class="meta">JS đọc status code (201 = thành công), hiển thị thông báo hoặc đổi màu căn hộ trên màn hình — không cần load lại trang.</span></div></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:32px;">Nhìn bằng code — 2 phía của cùng một request</h3>
+    <div class="grid2">
+      <div>
+        <p style="margin-bottom:8px;"><b>Phía Frontend</b> — bắt click, gói request, gửi đi</p>
+        <div class="codebox"><span class="c">// Gắn hàm xử lý vào sự kiện click của nút</span>
+document.getElementById(<span class="s">'btnBooking'</span>).addEventListener(<span class="s">'click'</span>, <span class="k">async</span> () => {
+  <span class="c">// Lấy dữ liệu từ form/state trên màn hình</span>
+  <span class="k">const</span> payload = {
+    unit_code: <span class="s">'UNIT-2201'</span>,
+    customer_id: <span class="s">'CUS-8842'</span>,
+    deposit_amount: 50000000
+  };
+
+  <span class="c">// Gói vào 1 HTTP request rồi gửi đi</span>
+  <span class="k">const</span> res = <span class="k">await</span> fetch(<span class="s">'https://api.rebe-project.vn/api/bookings'</span>, {
+    method: <span class="s">'POST'</span>,
+    headers: {
+      <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span>,
+      <span class="s">'Authorization'</span>: <span class="s">'Bearer eyJhbGc...'</span>
+    },
+    body: JSON.stringify(payload)
+  });
+
+  <span class="k">const</span> data = <span class="k">await</span> res.json();
+  <span class="c">// Đọc status code để quyết định hiển thị gì</span>
+  <span class="k">if</span> (res.status === 201) alert(<span class="s">'Giữ chỗ thành công: '</span> + data.booking_id);
+  <span class="k">else</span> alert(<span class="s">'Lỗi: '</span> + data.error);
+});</div>
+      </div>
+      <div>
+        <p style="margin-bottom:8px;"><b>Phía Backend</b> — nhận request, kiểm tra, sinh SQL</p>
+        <div class="codebox"><span class="c">// ROUTE — địa chỉ nào gọi hàm nào</span>
+app.post(<span class="s">'/api/bookings'</span>, createBooking);
+
+<span class="k">async function</span> createBooking(req, res) {
+  <span class="k">const</span> { unit_code, customer_id, deposit_amount } = req.body;
+
+  <span class="c">// VALIDATION</span>
+  <span class="k">if</span> (!unit_code || !customer_id) {
+    <span class="k">return</span> res.status(400).json({ error: <span class="s">'ERR_MISSING_FIELD'</span> });
+  }
+
+  <span class="c">// BUSINESS RULE — còn trống không?</span>
+  <span class="k">const</span> unit = <span class="k">await</span> db.query(
+    <span class="s">'SELECT status FROM units WHERE unit_code = $1'</span>, [unit_code]
+  );
+  <span class="k">if</span> (unit.status !== <span class="s">'available'</span>) {
+    <span class="k">return</span> res.status(409).json({ error: <span class="s">'ERR_UNIT_ALREADY_BOOKED'</span> });
+  }
+
+  <span class="c">// DATA ACCESS — SQL có tham số, không nối chuỗi</span>
+  <span class="k">const</span> result = <span class="k">await</span> db.query(
+    <span class="s">'INSERT INTO bookings (unit_code, customer_id, deposit_amount, status) '</span> +
+    <span class="s">'VALUES ($1, $2, $3, $4) RETURNING id'</span>,
+    [unit_code, customer_id, deposit_amount, <span class="s">'pending_payment'</span>]
+  );
+
+  res.status(201).json({ booking_id: result.id, status: <span class="s">'pending_payment'</span> });
+}</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:24px; overflow-x:auto;">
+      <h3 style="margin-bottom:16px;">3 thứ frontend bắt buộc phải đóng gói trong request</h3>
+      <table class="cmp-table">
+        <thead><tr><th>Thành phần</th><th>Frontend gửi gì</th><th>Backend dùng để làm gì</th></tr></thead>
+        <tbody>
+          <tr><td><b>Method + URL</b></td><td><code>POST /api/bookings</code></td><td>Xác định chạy đúng hàm nào (routing)</td></tr>
+          <tr><td><b>Headers</b></td><td>Token xác thực, kiểu dữ liệu gửi lên</td><td>Biết ai đang gọi, có quyền không, đọc body kiểu gì</td></tr>
+          <tr><td><b>Body</b></td><td><code>unit_code, customer_id, deposit_amount</code></td><td>Chính là các giá trị được nhét vào câu lệnh SQL</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <b>Câu BA nên hỏi dev khi review kỹ thuật:</b> Ở bước sinh SQL, dữ liệu từ request <u>không bao giờ</u> được
+      nối trực tiếp vào chuỗi lệnh (vd <code>"...VALUES ('" + unit_code + "')"</code>) — làm vậy mở đường cho tấn
+      công <b>SQL Injection</b> (kẻ xấu gõ dữ liệu độc hại vào ô input để chèn lệnh phá database). Cách an toàn là
+      <b>tham số hóa</b> (parameterized query, như <code>$1, $2</code> ở ví dụ trên) hoặc dùng ORM. Với dữ liệu tài
+      chính/pháp lý bất động sản, đây là câu hỏi nên đặt ra thẳng trong buổi review, không phải việc "chỉ dev mới cần biết".
+    </div>
+  </section>
+
+  <!-- ============ 06 STATUS CODE ============ -->
+  <section class="block" id="s7">
+    <div class="block-head"><span class="block-num">07</span><h2>Status Code — bấm để xem ý nghĩa</h2></div>
+    <p>Status code 3 chữ số cho biết kết quả cuộc gọi. BA không cần thuộc hết, chỉ cần nhận diện nhóm và vài mã hay gặp.</p>
+    <div class="status-grid" id="statusGrid">
+      <div class="status-chip g" data-detail="✅ <b>200 OK</b> — Yêu cầu thành công, có dữ liệu trả về. Dùng cho GET/PUT/PATCH thành công.">
+        <div class="code">200</div><div class="label">OK</div>
+      </div>
+      <div class="status-chip g" data-detail="✅ <b>201 Created</b> — Tạo mới thành công. Luôn đi kèm POST khi tạo booking, tạo tài khoản...">
+        <div class="code">201</div><div class="label">Created</div>
+      </div>
+      <div class="status-chip g" data-detail="✅ <b>204 No Content</b> — Thành công nhưng không có dữ liệu trả về. Thường gặp ở DELETE.">
+        <div class="code">204</div><div class="label">No Content</div>
+      </div>
+      <div class="status-chip a" data-detail="⚠️ <b>400 Bad Request</b> — Dữ liệu gửi lên sai định dạng/thiếu field bắt buộc. Lỗi phía người gọi (frontend/BA cần rà lại spec).">
+        <div class="code">400</div><div class="label">Bad Request</div>
+      </div>
+      <div class="status-chip a" data-detail="⚠️ <b>401 Unauthorized</b> — Chưa xác thực hoặc token hết hạn. Khác với 403 — đây là 'chưa biết bạn là ai'.">
+        <div class="code">401</div><div class="label">Unauthorized</div>
+      </div>
+      <div class="status-chip a" data-detail="⚠️ <b>403 Forbidden</b> — Đã biết bạn là ai, nhưng không có quyền. Đây là mã BA hay dùng khi đặc tả phân quyền theo vai trò.">
+        <div class="code">403</div><div class="label">Forbidden</div>
+      </div>
+      <div class="status-chip a" data-detail="⚠️ <b>404 Not Found</b> — Không tìm thấy tài nguyên, vd gọi sai unit_code hoặc bản ghi đã bị xóa.">
+        <div class="code">404</div><div class="label">Not Found</div>
+      </div>
+      <div class="status-chip a" data-detail="⚠️ <b>409 Conflict</b> — Xung đột dữ liệu, ví dụ kinh điển: 2 broker cùng giữ chỗ 1 căn hộ trong 1 giây. BA phải đặc tả rõ ai thắng, ai nhận thông báo.">
+        <div class="code">409</div><div class="label">Conflict</div>
+      </div>
+      <div class="status-chip r" data-detail="🔴 <b>500 Internal Server Error</b> — Lỗi phía hệ thống backend, không phải lỗi dữ liệu gửi lên. Đây là mã cần báo dev ngay, không phải sửa requirement.">
+        <div class="code">500</div><div class="label">Server Error</div>
+      </div>
+    </div>
+    <div class="status-detail" id="statusDetail"></div>
+    <div class="callout">
+      <b>Quy tắc nhớ nhanh:</b> 2xx = thành công · 4xx = lỗi do người gọi (dữ liệu/quyền) · 5xx = lỗi do hệ thống.
+      Khi test, nếu BA thấy 4xx mà tài liệu API không mô tả — đó là gap cần đưa vào bug/CR ngay.
+    </div>
+  </section>
+
+  <!-- ============ 05 AUTH ============ -->
+  <section class="block" id="s8">
+    <div class="block-head"><span class="block-num">08</span><h2>Authentication — ai được phép gọi?</h2></div>
+    <p>API không mở cho tất cả mọi người. BA cần phân biệt 3 cơ chế phổ biến để viết đúng yêu cầu bảo mật/tích hợp
+    trong SRS.</p>
+    <div class="authbar" id="authTabs">
+      <button class="authbtn active" data-auth="apikey">API Key</button>
+      <button class="authbtn" data-auth="oauth">OAuth 2.0</button>
+      <button class="authbtn" data-auth="jwt">JWT Token</button>
+    </div>
+
+    <div class="authpanel active" data-authpanel="apikey">
+      <p><b>Dùng khi:</b> tích hợp hệ thống-với-hệ thống (server-to-server), ví dụ REBE gọi API cổng thanh toán.
+      Đơn giản, nhưng nếu lộ key là lộ toàn quyền — không nên dùng cho app phía người dùng cuối.</p>
+      <div class="seq">
+        <div class="seq-step"><div class="seq-num">1</div><div><b>Đối tác cấp 1 API Key cố định</b><span class="meta">Lưu trong biến môi trường server, không hard-code, không commit lên git.</span></div></div>
+        <div class="seq-step"><div class="seq-num">2</div><div><b>Mỗi request đính kèm key trong header</b><span class="meta"><code style="font-family:var(--mono);background:var(--paper-2);padding:2px 6px;border-radius:4px;">X-API-Key: sk_live_xxxx</code></span></div></div>
+        <div class="seq-step"><div class="seq-num">3</div><div><b>Server đối chiếu key</b><span class="meta">Đúng → xử lý. Sai/thiếu → trả 401.</span></div></div>
+      </div>
+    </div>
+
+    <div class="authpanel" data-authpanel="oauth">
+      <p><b>Dùng khi:</b> app cần thay mặt người dùng thao tác trên hệ thống thứ 3 (vd "Đăng nhập bằng Google",
+      hoặc BA kết nối app với Google Drive/Zalo OA). Phức tạp hơn nhưng an toàn hơn vì không lộ mật khẩu gốc.</p>
+      <div class="seq">
+        <div class="seq-step"><div class="seq-num">1</div><div><b>Người dùng bấm "Đăng nhập bằng ..."</b><span class="meta">App điều hướng sang trang đăng nhập của bên thứ 3.</span></div></div>
+        <div class="seq-step"><div class="seq-num">2</div><div><b>Người dùng đồng ý cấp quyền</b><span class="meta">Bên thứ 3 trả về một "authorization code" tạm thời cho app.</span></div></div>
+        <div class="seq-step"><div class="seq-num">3</div><div><b>App đổi code lấy Access Token</b><span class="meta">Gọi ngầm ở backend, người dùng không thấy bước này.</span></div></div>
+        <div class="seq-step"><div class="seq-num">4</div><div><b>App dùng Access Token để gọi API thay mặt user</b><span class="meta">Token thường hết hạn sau X phút/giờ — cần Refresh Token để xin cấp mới.</span></div></div>
+      </div>
+    </div>
+
+    <div class="authpanel" data-authpanel="jwt">
+      <p><b>Dùng khi:</b> xác thực người dùng trong chính hệ thống của mình (vd người dùng đăng nhập app REBE bằng
+      email/password nội bộ). Token tự chứa thông tin (user id, role, thời hạn) nên server không cần tra database mỗi lần.</p>
+      <div class="seq">
+        <div class="seq-step"><div class="seq-num">1</div><div><b>Người dùng đăng nhập email/password</b><span class="meta">POST /auth/login</span></div></div>
+        <div class="seq-step"><div class="seq-num">2</div><div><b>Server trả về JWT token</b><span class="meta">Token mã hoá sẵn user_id, role, hạn dùng — dạng chuỗi 3 phần cách nhau bởi dấu chấm.</span></div></div>
+        <div class="seq-step"><div class="seq-num">3</div><div><b>Client lưu token, đính kèm mọi request sau</b><span class="meta"><code style="font-family:var(--mono);background:var(--paper-2);padding:2px 6px;border-radius:4px;">Authorization: Bearer eyJhbGc...</code></span></div></div>
+        <div class="seq-step"><div class="seq-num">4</div><div><b>Token hết hạn → phải đăng nhập lại hoặc refresh</b><span class="meta">BA cần quyết định: hạn token bao lâu là hợp lý cho từng vai trò (admin/broker/khách hàng)?</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 TÀI LIỆU API ============ -->
+  <section class="block" id="s9">
+    <div class="block-head"><span class="block-num">09</span><h2>Đọc tài liệu API (Swagger/OpenAPI)</h2></div>
+    <p>Hầu hết dự án hiện nay công bố API qua <b>Swagger UI</b> — một trang web liệt kê toàn bộ endpoint. BA không
+    cần biết viết Swagger, chỉ cần biết đọc để review đối chiếu với requirement.</p>
+    <div class="card">
+      <div class="grid3">
+        <div>
+          <h3 style="font-size:16px;">🔍 Tìm endpoint</h3>
+          <p style="font-size:14px;">Nhóm theo tag (vd "Bookings", "Units", "Payments"). Mỗi endpoint hiện rõ method + path + mô tả ngắn.</p>
+        </div>
+        <div>
+          <h3 style="font-size:16px;">📋 Đối chiếu schema</h3>
+          <p style="font-size:14px;">Phần "Request body" / "Response" hiện đúng field, kiểu dữ liệu, field nào required (*) — so khớp với bảng đặc tả BA đã viết.</p>
+        </div>
+        <div>
+          <h3 style="font-size:16px;">▶️ "Try it out"</h3>
+          <p style="font-size:14px;">Swagger cho phép gọi thử API ngay trên trình duyệt, xem response thật — rất hữu ích khi BA muốn tự kiểm chứng trước khi báo bug.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <b>Công cụ tay ngang cho BA:</b> Postman là công cụ phổ biến nhất để BA tự tay gọi thử API mà không cần biết
+      code — chỉ cần điền URL, chọn method, dán body mẫu, bấm Send. Rất nên có trong bộ kỹ năng BA hiện đại, ngang
+      với việc biết dùng Excel.
+    </div>
+  </section>
+
+  <!-- ============ 07 QUY TRÌNH BA ============ -->
+  <section class="block" id="s10">
+    <div class="block-head"><span class="block-num">10</span><h2>Quy trình BA làm việc với API trong dự án</h2></div>
+    <p>5 bước lặp lại ở hầu hết dự án có tích hợp API — bấm vào từng mốc để xem chi tiết việc BA cần làm.</p>
+    <div class="timeline" id="timeline">
+      <div class="tstep" data-step="1"><div class="dot">1</div><h4>Khám phá & phạm vi</h4><p>Xác định hệ thống nào cần nối với nhau</p></div>
+      <div class="tstep" data-step="2"><div class="dot">2</div><h4>Đọc tài liệu API</h4><p>Nắm rõ endpoint, field, giới hạn</p></div>
+      <div class="tstep" data-step="3"><div class="dot">3</div><h4>Viết Use Case / Story</h4><p>Chuyển kỹ thuật thành ngôn ngữ nghiệp vụ</p></div>
+      <div class="tstep" data-step="4"><div class="dot">4</div><h4>Review với Dev</h4><p>Thống nhất field, lỗi, edge case</p></div>
+      <div class="tstep" data-step="5"><div class="dot">5</div><h4>Test & nghiệm thu</h4><p>Gọi thử bằng Postman, đối chiếu kết quả</p></div>
+    </div>
+    <div class="card" id="timelineDetail" style="margin-top:22px;">
+      <h3 id="tdTitle">Bước 1 · Khám phá & phạm vi</h3>
+      <p id="tdBody" style="margin:0;">Làm rõ với stakeholder: hệ thống A cần lấy/gửi dữ liệu gì sang hệ thống B?
+      Ai là chủ sở hữu API (nội bộ dev tự viết, hay đối tác thứ 3 cung cấp)? Có giới hạn nào về tần suất gọi
+      (rate limit), chi phí theo lượt gọi, hay SLA thời gian phản hồi không? Đây là lúc BA vẽ sơ đồ luồng dữ liệu
+      tổng quan (data flow) trước khi đi vào chi tiết kỹ thuật.</p>
+    </div>
+  </section>
+
+  <!-- ============ 08 CASE STUDY ============ -->
+  <section class="block" id="s11">
+    <div class="block-head"><span class="block-num">11</span><h2>Case study: Đặt chỗ căn hộ + Cổng thanh toán</h2></div>
+    <p>Một ví dụ tích hợp thực tế thường gặp trong dự án bất động sản — booking giữ chỗ kèm thanh toán đặt cọc online.
+    Đây là dạng sequence mà BA nên vẽ ra để đặc tả use case tích hợp.</p>
+    <div class="card">
+      <div class="case-flow">
+        <div class="flow-row"><div class="flow-actor">Khách hàng</div><div class="flow-bubble">Bấm "Giữ chỗ & Đặt cọc" trên app cho căn <code>UNIT-2201</code></div></div>
+        <div class="flow-row"><div class="flow-actor">App REBE</div><div class="flow-bubble"><code>POST /bookings</code> → tạo booking trạng thái <code>pending_payment</code>, trả về <code>booking_id</code></div></div>
+        <div class="flow-row"><div class="flow-actor">App REBE</div><div class="flow-bubble"><code>POST /payment-gateway/create-order</code> gửi số tiền cọc + booking_id sang cổng thanh toán</div></div>
+        <div class="flow-row"><div class="flow-actor">Cổng TT</div><div class="flow-bubble">Trả về link thanh toán (QR/redirect) — khách hàng thanh toán trên trang cổng, không phải trên app REBE</div></div>
+        <div class="flow-row"><div class="flow-actor">Cổng TT</div><div class="flow-bubble">Sau khi khách trả tiền xong, cổng gọi ngược lại <code>webhook</code>: <code>POST /webhooks/payment-result</code> báo kết quả cho REBE</div></div>
+        <div class="flow-row"><div class="flow-actor">App REBE</div><div class="flow-bubble">Nhận webhook → đối chiếu chữ ký bảo mật → cập nhật booking sang <code>confirmed</code> bằng <code>PATCH /bookings/{id}</code></div></div>
+      </div>
+    </div>
+    <div class="callout">
+      <b>3 câu hỏi BA bắt buộc phải đặc tả trong use case này:</b><br>
+      1. Nếu khách thanh toán nhưng webhook bị mất/trễ — hệ thống có cơ chế đối soát định kỳ (reconciliation) không?<br>
+      2. Nếu 2 khách cùng bấm giữ chỗ 1 căn trong cùng khoảnh khắc — ai được ưu tiên, người còn lại nhận thông báo gì (mã 409)?<br>
+      3. Booking ở trạng thái <code>pending_payment</code> quá bao lâu thì tự động hủy để nhả căn hộ ra lại cho người khác?
+    </div>
+  </section>
+
+  <!-- ============ 09 CHECKLIST ============ -->
+  <section class="block" id="s12">
+    <div class="block-head"><span class="block-num">12</span><h2>Checklist — BA cần hỏi gì trước khi chốt requirement?</h2></div>
+    <p>Bấm để đánh dấu — dùng như bảng tự kiểm tra trước khi gửi SRS/BRD cho dev.</p>
+    <div class="checklist" id="checklist">
+      <div class="chk-item"><div class="chk-box"></div><span>Field nào bắt buộc, field nào tùy chọn — đã liệt kê rõ trong bảng đặc tả chưa?</span></div>
+      <div class="chk-item"><div class="chk-box"></div><span>Đã định nghĩa rõ mã lỗi nghiệp vụ cho từng trường hợp lỗi thường gặp chưa?</span></div>
+      <div class="chk-item"><div class="chk-box"></div><span>Gọi API 2 lần liên tiếp (do mạng lag, người dùng bấm 2 lần) có tạo dữ liệu trùng không?</span></div>
+      <div class="chk-item"><div class="chk-box"></div><span>Ai có quyền gọi API này — đã map theo vai trò (role) chưa?</span></div>
+      <div class="chk-item"><div class="chk-box"></div><span>Token/phiên đăng nhập hết hạn thì trải nghiệm người dùng ra sao?</span></div>
+      <div class="chk-item"><div class="chk-box"></div><span>Có giới hạn số lượt gọi (rate limit) không — ảnh hưởng gì đến UX nếu vượt giới hạn?</span></div>
+      <div class="chk-item"><div class="chk-box"></div><span>Dữ liệu xóa là xóa cứng hay xóa mềm — có cần giữ lại để truy vết/audit không?</span></div>
+      <div class="chk-item"><div class="chk-box"></div><span>Trường hợp 2 nguồn cùng sửa 1 bản ghi cùng lúc — xử lý xung đột (409) thế nào?</span></div>
+    </div>
+  </section>
+
+  <!-- ============ 10 QUIZ ============ -->
+  <section class="block" id="s13">
+    <div class="block-head"><span class="block-num">13</span><h2>Tự kiểm tra nhanh</h2></div>
+    <p>3 câu hỏi tình huống — chọn đáp án để xem giải thích ngay.</p>
+
+    <div class="card quiz-card">
+      <div class="quiz-q">1. Màn hình "Danh sách căn hộ còn trống" chỉ hiển thị dữ liệu, không cho sửa gì. Đây nhiều khả năng dùng method nào?</div>
+      <div class="quiz-opts" data-answer="0">
+        <button class="quiz-opt">GET</button>
+        <button class="quiz-opt">POST</button>
+        <button class="quiz-opt">DELETE</button>
+      </div>
+      <div class="quiz-explain">Đúng vậy — <b>GET</b> dùng để lấy/xem dữ liệu, không thay đổi gì trên server, an toàn khi gọi lại nhiều lần.</div>
+    </div>
+
+    <div class="card quiz-card">
+      <div class="quiz-q">2. Hai broker cùng bấm "Giữ chỗ" một căn hộ trong cùng 1 giây. Hệ thống nên trả về mã lỗi nào cho người đến sau?</div>
+      <div class="quiz-opts" data-answer="2">
+        <button class="quiz-opt">200 OK</button>
+        <button class="quiz-opt">500 Server Error</button>
+        <button class="quiz-opt">409 Conflict</button>
+      </div>
+      <div class="quiz-explain"><b>409 Conflict</b> — đúng nghĩa "xung đột dữ liệu", không phải lỗi hệ thống (500) và
+      chắc chắn không phải thành công (200). BA cần yêu cầu dev trả đúng mã này để frontend hiện thông báo phù hợp.</div>
+    </div>
+
+    <div class="card quiz-card">
+      <div class="quiz-q">3. App tích hợp "Đăng nhập bằng Google" cho người dùng cuối — nên dùng cơ chế xác thực nào?</div>
+      <div class="quiz-opts" data-answer="1">
+        <button class="quiz-opt">API Key cố định</button>
+        <button class="quiz-opt">OAuth 2.0</button>
+        <button class="quiz-opt">Không cần xác thực</button>
+      </div>
+      <div class="quiz-explain"><b>OAuth 2.0</b> — vì app cần "mượn quyền" của người dùng trên hệ thống Google mà
+      không cần biết mật khẩu Google của họ. API Key cố định chỉ phù hợp cho tích hợp server-to-server.</div>
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>API cho Business Analyst — Cẩm nang thực chiến · Dùng nội bộ để training & tự tham khảo</footer>
+</div>
+
+<script>
+// Scroll-spy for TOC
+const sections = document.querySelectorAll('section.block');
+const tocLinks = document.querySelectorAll('nav.toc a');
+const spy = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      tocLinks.forEach(l=>l.classList.remove('active'));
+      const link = document.querySelector(`nav.toc a[href="#${e.target.id}"]`);
+      if(link) link.classList.add('active');
+    }
+  });
+},{rootMargin:'-15% 0px -75% 0px'});
+sections.forEach(s=>spy.observe(s));
+
+// Method tabs
+document.querySelectorAll('#methodTabs .tabbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#methodTabs .tabbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const m = btn.dataset.method;
+    document.querySelectorAll('.tabpanel[data-panel]').forEach(p=>p.classList.remove('active'));
+    document.querySelector(`.tabpanel[data-panel="${m}"]`).classList.add('active');
+  });
+});
+
+// API type tabs
+document.querySelectorAll('#apiTypeTabs .tabbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#apiTypeTabs .tabbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const t = btn.dataset.apitype;
+    document.querySelectorAll('[data-typepanel]').forEach(p=>p.classList.remove('active'));
+    document.querySelector(`[data-typepanel="${t}"]`).classList.add('active');
+  });
+});
+
+// Status chips
+const statusDetail = document.getElementById('statusDetail');
+document.querySelectorAll('.status-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    statusDetail.innerHTML = chip.dataset.detail;
+    statusDetail.classList.add('show');
+    document.querySelectorAll('.status-chip').forEach(c=>c.style.outline='none');
+    chip.style.outline = '2.5px solid var(--ink)';
+  });
+});
+
+// Auth tabs
+document.querySelectorAll('#authTabs .authbtn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('#authTabs .authbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const a = btn.dataset.auth;
+    document.querySelectorAll('.authpanel').forEach(p=>p.classList.remove('active'));
+    document.querySelector(`.authpanel[data-authpanel="${a}"]`).classList.add('active');
+  });
+});
+
+// Timeline
+const timelineData = {
+  1:{title:"Bước 1 · Khám phá & phạm vi", body:"Làm rõ với stakeholder: hệ thống A cần lấy/gửi dữ liệu gì sang hệ thống B? Ai là chủ sở hữu API (nội bộ dev tự viết, hay đối tác thứ 3 cung cấp)? Có giới hạn nào về tần suất gọi (rate limit), chi phí theo lượt gọi, hay SLA thời gian phản hồi không? Đây là lúc BA vẽ sơ đồ luồng dữ liệu tổng quan (data flow) trước khi đi vào chi tiết kỹ thuật."},
+  2:{title:"Bước 2 · Đọc tài liệu API", body:"Mở Swagger/Postman collection do dev hoặc đối tác cung cấp. Ghi chú lại: endpoint nào cần dùng, field bắt buộc là gì, có field nào hệ thống mình chưa từng lưu (cần bổ sung database) không. Nếu tài liệu API không có/không rõ — đây là rủi ro cần nêu ngay, đừng đoán."},
+  3:{title:"Bước 3 · Viết Use Case / User Story", body:"Dịch chi tiết kỹ thuật thành ngôn ngữ nghiệp vụ: điều kiện tiên quyết, luồng chính, luồng ngoại lệ (exception flow) ứng với từng mã lỗi có thể xảy ra. Đây là lúc bảng 'Field · Bắt buộc · Kiểu dữ liệu · Quy tắc nghiệp vụ' ở mục 05 phát huy tác dụng."},
+  4:{title:"Bước 4 · Review với Dev", body:"Ngồi lại cùng dev để rà: use case có bỏ sót field/case nào dev thấy vô lý về mặt kỹ thuật không? Ngược lại, thiết kế API có đáp ứng đủ nghiệp vụ không? Đây là bước 2 chiều — BA không chỉ 'giao việc' mà cùng thống nhất hợp đồng dữ liệu (data contract)."},
+  5:{title:"Bước 5 · Test & nghiệm thu", body:"Dùng Postman tự gọi thử các case chính + case biên (dữ liệu thiếu, sai định dạng, hết hạn token, xung đột dữ liệu). So khớp response thực tế với use case đã viết. Đây là cách BA nghiệm thu API độc lập, không chỉ dựa vào lời dev báo 'xong rồi'."}
+};
+document.querySelectorAll('.tstep .dot').forEach(dot=>{
+  dot.addEventListener('click',()=>{
+    const step = dot.parentElement.dataset.step;
+    document.getElementById('tdTitle').textContent = timelineData[step].title;
+    document.getElementById('tdBody').textContent = timelineData[step].body;
+  });
+});
+
+// Checklist toggle
+document.querySelectorAll('.chk-item').forEach(item=>{
+  item.addEventListener('click',()=>{
+    item.classList.toggle('done');
+    const box = item.querySelector('.chk-box');
+    box.textContent = item.classList.contains('done') ? '✓' : '';
+  });
+});
+
+// Quiz
+document.querySelectorAll('.quiz-opts').forEach(group=>{
+  const correctIdx = parseInt(group.dataset.answer);
+  const opts = group.querySelectorAll('.quiz-opt');
+  const explain = group.parentElement.querySelector('.quiz-explain');
+  opts.forEach((opt,idx)=>{
+    opt.addEventListener('click',()=>{
+      opts.forEach(o=>{o.disabled=true; o.style.pointerEvents='none';});
+      if(idx===correctIdx){opt.classList.add('correct');}
+      else{opt.classList.add('wrong'); opts[correctIdx].classList.add('correct');}
+      explain.classList.add('show');
+    });
+  });
+});
+</script>
+</body>
+</html>
